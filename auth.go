@@ -19,7 +19,7 @@ type customClaims struct {
 
 func (auth *Auth) GetUserFromToken(token string) (User, error) {
 	tokenParsed, err := jwt.ParseWithClaims(token, &customClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return auth.Key, nil
+		return []byte(auth.Key), nil
 	})
 
 	if err != nil {
