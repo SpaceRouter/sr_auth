@@ -1,5 +1,5 @@
 module github.com/spacerouter/sr_auth
 
-require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-)
+go 1.16
+
+require github.com/dgrijalva/jwt-go v3.2.0+incompatible
