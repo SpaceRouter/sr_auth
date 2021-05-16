@@ -13,7 +13,7 @@ func (auth *Auth) SrAuthMiddlewareGin() gin.HandlerFunc {
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
 		tokenString = strings.Replace(tokenString, "bearer ", "", 1)
 
-		u, err := auth.GetUserFromToken(tokenString)
+		u, err := auth.GetUsernameFromToken(tokenString)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"Message": err.Error()})
 			return
@@ -24,10 +24,10 @@ func (auth *Auth) SrAuthMiddlewareGin() gin.HandlerFunc {
 	}
 }
 
-func (auth *Auth) SrAuthHttp(r *http.Request) (User, error) {
+func (auth *Auth) SrAuthHttp(r *http.Request) (string, error) {
 	tokenString := r.Header.Get("Authorization")
 	tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
 	tokenString = strings.Replace(tokenString, "bearer ", "", 1)
 
-	return auth.GetUserFromToken(tokenString)
+	return auth.GetUsernameFromToken(tokenString)
 }

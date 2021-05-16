@@ -2,43 +2,30 @@ package sr_auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"time"
 )
 
 type Auth struct {
-	Key string
-}
-
-func CreateAuth(key string) Auth {
-	return Auth{key}
+	Key               string
+	AuthServerAddress string
 }
 
 type customClaims struct {
-	User User
+	Username string
 	jwt.StandardClaims
 }
 
-func (auth *Auth) GetUserFromToken(token string) (User, error) {
+func CreateAuth(key string, authServerAddress string) *Auth {
+	return &Auth{Key: key, AuthServerAddress: authServerAddress}
+}
+
+func (auth *Auth) GetUsernameFromToken(token string) (string, error) {
 	tokenParsed, err := jwt.ParseWithClaims(token, &customClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(auth.Key), nil
 	})
 
 	if err != nil {
-		return User{}, err
+		return "", err
 	}
 
-	return tokenParsed.Claims.(*customClaims).User, nil
-}
-
-func (auth *Auth) CreateToken(user User, issuer string) (string, error) {
-	var claim = jwt.StandardClaims{
-		ExpiresAt: time.Now().AddDate(0, 0, 1).Unix(),
-		Issuer:    issuer,
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, customClaims{
-		user,
-		claim,
-	})
-
-	return token.SignedString([]byte(auth.Key))
+	return tokenParsed.Claims.(*customClaims).Username, nil
 }
