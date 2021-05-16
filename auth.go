@@ -2,6 +2,7 @@ package sr_auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"time"
 )
 
 type Auth struct {
@@ -27,4 +28,17 @@ func (auth *Auth) GetUserFromToken(token string) (User, error) {
 	}
 
 	return tokenParsed.Claims.(*customClaims).User, nil
+}
+
+func (auth *Auth) CreateToken(user User, issuer string) (string, error) {
+	var claim = jwt.StandardClaims{
+		ExpiresAt: time.Now().AddDate(0, 0, 1).Unix(),
+		Issuer:    issuer,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, customClaims{
+		user,
+		claim,
+	})
+
+	return token.SignedString([]byte(auth.Key))
 }
