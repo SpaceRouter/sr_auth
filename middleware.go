@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (auth *Auth) SrAuthMiddleware() gin.HandlerFunc {
+func (auth *Auth) SrAuthMiddlewareGin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.Request.Header.Get("Authorization")
 
@@ -22,4 +22,12 @@ func (auth *Auth) SrAuthMiddleware() gin.HandlerFunc {
 		c.Set("user", u)
 		c.Next()
 	}
+}
+
+func (auth *Auth) SrAuthHttp(r *http.Request) (User, error) {
+	tokenString := r.Header.Get("Authorization")
+	tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
+	tokenString = strings.Replace(tokenString, "bearer ", "", 1)
+
+	return auth.GetUserFromToken(tokenString)
 }
