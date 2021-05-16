@@ -2,6 +2,7 @@ package sr_auth
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -29,13 +30,18 @@ type UserInfoResponse struct {
 }
 
 func (auth *Auth) GetRoles(token string) ([]Role, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: auth.CheckTLS},
+	}
+	client := &http.Client{Transport: tr}
+
 	req, err := http.NewRequest("GET", auth.AuthServerAddress+"/v1/roles", nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -60,13 +66,18 @@ func (auth *Auth) GetRoles(token string) ([]Role, error) {
 }
 
 func (auth *Auth) GetUserInfo(token string) (*User, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: auth.CheckTLS},
+	}
+	client := &http.Client{Transport: tr}
+
 	req, err := http.NewRequest("GET", auth.AuthServerAddress+"/v1/info", nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

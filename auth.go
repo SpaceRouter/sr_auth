@@ -7,6 +7,7 @@ import (
 type Auth struct {
 	Key               string
 	AuthServerAddress string
+	CheckTLS          bool
 }
 
 type customClaims struct {
@@ -14,8 +15,8 @@ type customClaims struct {
 	jwt.StandardClaims
 }
 
-func CreateAuth(key string, authServerAddress string) *Auth {
-	return &Auth{Key: key, AuthServerAddress: authServerAddress}
+func CreateAuth(key string, authServerAddress string, checkTLS bool) *Auth {
+	return &Auth{Key: key, AuthServerAddress: authServerAddress, CheckTLS: true}
 }
 
 func (auth *Auth) GetUsernameFromToken(token string) (string, error) {
