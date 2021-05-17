@@ -2,45 +2,27 @@ package sr_auth
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-type Role string
-
-type User struct {
-	Login     string
-	FirstName string
-	LastName  string
-	Email     string
+func (u *User) GetUsername() string {
+	return u.username
 }
 
-type userRolesResponse struct {
-	Message string
-	Ok      bool
-	Roles   []Role
-}
-
-type UserInfoResponse struct {
-	Message string
-	Ok      bool
-	User    User
-}
-
-func (auth *Auth) GetRoles(token string) ([]Role, error) {
+func (u *User) GetRoles() ([]Role, error) {
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: auth.CheckTLS},
+		TLSClientConfig: u.auth.TlsConfig,
 	}
 	client := &http.Client{Transport: tr}
 
-	req, err := http.NewRequest("GET", auth.AuthServerAddress+"/v1/roles", nil)
+	req, err := http.NewRequest("GET", u.auth.AuthServerAddress+"/v1/roles", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Authorization", "Bearer "+u.token)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -65,18 +47,18 @@ func (auth *Auth) GetRoles(token string) ([]Role, error) {
 	return rolesResponse.Roles, nil
 }
 
-func (auth *Auth) GetUserInfo(token string) (*User, error) {
+func (u *User) GetUserInfo() (*UserInfo, error) {
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: auth.CheckTLS},
+		TLSClientConfig: u.auth.TlsConfig,
 	}
 	client := &http.Client{Transport: tr}
 
-	req, err := http.NewRequest("GET", auth.AuthServerAddress+"/v1/info", nil)
+	req, err := http.NewRequest("GET", u.auth.AuthServerAddress+"/v1/info", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Authorization", "Bearer "+u.token)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -88,7 +70,7 @@ func (auth *Auth) GetUserInfo(token string) (*User, error) {
 		return nil, err
 	}
 
-	var rolesResponse UserInfoResponse
+	var rolesResponse userInfoResponse
 	err = json.Unmarshal(buffer.Bytes(), &rolesResponse)
 	if err != nil {
 		return nil, err
@@ -98,7 +80,7 @@ func (auth *Auth) GetUserInfo(token string) (*User, error) {
 		return nil, fmt.Errorf("auth server error : %s", rolesResponse.Message)
 	}
 
-	return &rolesResponse.User, nil
+	return &rolesResponse.UserInfo, nil
 }
 
 func HasRole(roles []Role, role Role) bool {

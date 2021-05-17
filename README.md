@@ -1,5 +1,7 @@
 # sr_auth
 
+[![](https://goreportcard.com//badge/github.com/SpaceRouter/sr_auth)](https://goreportcard.com/report/github.com/SpaceRouter/sr_auth)
+
 ## Example
 
 ## Vanilla usage
@@ -15,15 +17,22 @@ import (
 func main() {
 	key := "SECRETKEY"
 
-	auth := sr_auth.CreateAuth(key)
+	auth := sr_auth.CreateAuth(key, "http://localhost:8080", nil)
 	user, err := auth.GetUserFromToken(tokenString)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Print(user)
+	roles, err := user.GetRoles()
+	if err != nil {
+		return
+	}
+
+	log.Println(user)
+	log.Println(roles)
 }
 ```
+
 - **key** is the token's secret key
 - **user** contains user's information
 
@@ -36,24 +45,32 @@ import (
 	"github.com/spacerouter/sr_auth"
 	"github.com/gin-gonic/gin"
 )
+
 func main() {
 	key := "SECRETKEY"
-	
+
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	auth := sr_auth.CreateAuth(key)
-	
-	router.Use(auth.SrAuthMiddleware())
+	auth := sr_auth.CreateAuth(key, "http://localhost:8080", nil)
+
+	router.Use(auth.SrAuthMiddlewareGin())
 
 	router.GET("/info", func(c *gin.Context) {
-		info, exist := c.Get("user")
+		userObject, exist := c.Get("user")
 		if !exist {
 			c.AbortWithStatus(500)
 			return
 		}
-		c.JSON(200, info)
+
+		user := userObject.(*sr_auth.User)
+
+		roles, err := user.GetRoles()
+		if err != nil {
+			return
+		}
+		c.JSON(200, gin.H{"user": user, "roles": roles})
 	})
 }
 ```

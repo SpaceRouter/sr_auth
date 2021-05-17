@@ -2,21 +2,23 @@ package sr_auth
 
 import "testing"
 
-var auth Auth = Auth{Key: "Test", AuthServerAddress: "http://localhost:8080"}
-var userTest User = User{
-	Login:     "user",
-	FirstName: "user",
-	LastName:  "user",
-	Email:     "user@user",
+var auth Auth = Auth{Key: "JESUISHYPERFANDESEXE", AuthServerAddress: "http://localhost:8080"}
+
+func TestCreateAuth(t *testing.T) {
+	auth := CreateAuth("JESUISHYPERFANDESEXE", "http://localhost:8080", nil)
+	err := auth.PingAuthServer()
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestGetUserFromToken(t *testing.T) {
-	username, err := auth.GetUsernameFromToken(token)
+	user, err := auth.GetUserFromToken(token)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if username != "test" {
+	if user.GetUsername() != "test" {
 		t.Fatalf("input != output")
 	}
 }
