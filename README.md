@@ -58,16 +58,16 @@ func main() {
 	router.Use(auth.SrAuthMiddlewareGin())
 
 	router.GET("/info", func(c *gin.Context) {
-		userObject, exist := c.Get("user")
-		if !exist {
+		
+		user, err := sr_auth.ExtractUser(c)
+		if err != nil {
 			c.AbortWithStatus(500)
 			return
 		}
 
-		user := userObject.(*sr_auth.User)
-
 		roles, err := user.GetRoles()
 		if err != nil {
+			c.AbortWithStatus(500)
 			return
 		}
 		c.JSON(200, gin.H{"user": user, "roles": roles})

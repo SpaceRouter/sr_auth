@@ -1,6 +1,7 @@
 package sr_auth
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -22,6 +23,15 @@ func (auth *Auth) SrAuthMiddlewareGin() gin.HandlerFunc {
 		c.Set("user", u)
 		c.Next()
 	}
+}
+
+func ExtractUser(c *gin.Context) (*User, error) {
+	userObject, exist := c.Get("user")
+	if !exist {
+		return nil, fmt.Errorf("user can't be found in session")
+	}
+
+	return userObject.(*User), nil
 }
 
 func (auth *Auth) SrAuthHttp(r *http.Request) (*User, error) {
