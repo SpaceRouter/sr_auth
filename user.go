@@ -11,13 +11,13 @@ func (u *User) GetUsername() string {
 	return u.username
 }
 
-func (u *User) GetRoles() ([]Role, error) {
+func (u *User) GetRoles() (*Role, error) {
 	tr := &http.Transport{
 		TLSClientConfig: u.auth.TlsConfig,
 	}
 	client := &http.Client{Transport: tr}
 
-	req, err := http.NewRequest("GET", u.auth.AuthServerAddress+"/v1/roles", nil)
+	req, err := http.NewRequest("GET", u.auth.AuthServerAddress+"/v1/role", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (u *User) GetRoles() ([]Role, error) {
 		return nil, fmt.Errorf("auth server error : %s", rolesResponse.Message)
 	}
 
-	return rolesResponse.Roles, nil
+	return &rolesResponse.Role, nil
 }
 
 func (u *User) GetUserInfo() (*UserInfo, error) {
@@ -81,13 +81,4 @@ func (u *User) GetUserInfo() (*UserInfo, error) {
 	}
 
 	return &rolesResponse.UserInfo, nil
-}
-
-func HasRole(roles []Role, role Role) bool {
-	for _, uRole := range roles {
-		if role == uRole {
-			return true
-		}
-	}
-	return false
 }

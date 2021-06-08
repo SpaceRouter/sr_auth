@@ -3,7 +3,7 @@ package sr_auth
 type userRolesResponse struct {
 	Message string
 	Ok      bool
-	Roles   []Role
+	Role    Role
 }
 
 type userInfoResponse struct {

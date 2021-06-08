@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var token string = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6InRlc3QiLCJleHAiOjE2MjEyODk4NjcsImlzcyI6InNwYWNlcm91dGVyIn0.H3yD-zOf7_64sDFNwwiq9cDCTYLr315XNZfy5K2UOmGHiqTN5TSRkoBRiIozFQbSGCrVYKodEurHaryHnhTteQ"
+var token string = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6InJvb3QiLCJleHAiOjE2MjMyNDA1OTEsImlhdCI6MTYyMzE1NDE5MSwiaXNzIjoic3BhY2Vyb3V0ZXIifQ.3OvbLtQbJanWvyZ3fnGAZPbp3zbJH7Moycg4PSSliD8rlHP72e_KCF8Vq6mhuTkDATTiu9RqV5KQ9U_YEu0jew"
 
 func TestGetRoles(t *testing.T) {
 	user, err := auth.GetUserFromToken(token)
