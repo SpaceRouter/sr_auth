@@ -16,7 +16,7 @@ func (auth *Auth) SrAuthMiddlewareGin() gin.HandlerFunc {
 
 		u, err := auth.GetUserFromToken(tokenString)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"Message": err.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"Message": "SrAuthMiddleware Error : " + err.Error(), "Ok": false})
 			return
 		}
 

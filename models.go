@@ -8,10 +8,10 @@ import (
 type Role string
 
 type UserInfo struct {
-	Login     string
-	FirstName string
-	LastName  string
-	Email     string
+	Login     string `json:"login"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
 }
 
 type Auth struct {
